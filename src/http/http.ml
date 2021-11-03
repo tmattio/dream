@@ -786,7 +786,7 @@ let serve
     ?secret
     ?old_secrets
     ~prefix
-    ~https:(if https then `OpenSSL else `No)
+    ~https:(if https then `OCaml_TLS else `No)
     ?certificate_file
     ?key_file
     ?certificate_string:None
@@ -886,7 +886,7 @@ let run
         ?secret
         ?old_secrets
         ~prefix
-        ~https:(if https then `OpenSSL else `No)
+        ~https:(if https then `OCaml_TLS else `No)
         ?certificate_file ?key_file
         ?certificate_string:None ?key_string:None
         ~builtins
