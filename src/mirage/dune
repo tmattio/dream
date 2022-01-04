@@ -9,8 +9,8 @@
   dream.localhost
   dream.middleware
   dream-pure
+  dream-httpaf.httpaf
   dream-httpaf.h2
-  dream-httpaf
   lwt
   dream-mirage.paf
   dream-mirage.paf.alpn
