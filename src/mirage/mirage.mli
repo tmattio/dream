@@ -1,10 +1,10 @@
-type incoming
-type outgoing
+type client
+type server
 
 type 'a message
 
-type request = incoming message
-type response = outgoing message
+type request = client message
+type response = server message
 
 type handler = request -> response Lwt.t
 type middleware = handler -> handler
@@ -12,7 +12,7 @@ type middleware = handler -> handler
 module Make
   (Pclock : Mirage_clock.PCLOCK)
   (Time : Mirage_time.S)
-  (Stack : Mirage_stack.V4V6) : sig
+  (Stack : Tcpip.Stack.V4V6) : sig
 
   type route
 
@@ -114,8 +114,36 @@ module Make
 
   val html : ?status:status -> ?code:int -> ?headers:(string * string) list -> string -> response Lwt.t
 
-  val param : string -> request -> string
+  val param : request -> string ->  string
 
+  val empty :
+  ?headers:(string * string) list ->
+    status -> response Lwt.t
+(** Same as {!Dream.val-response} with the empty string for a body. *)
+
+val static :
+  loader:(string -> string -> handler) ->
+    string -> handler
+(** Serves static files from a local directory. See example
+    {{:https://github.com/aantron/dream/tree/master/example/f-static#files}
+    [f-static]}.
+
+    {[
+      let () =
+        Dream.run
+        @@ Dream.router {
+          Dream.get "/static/**" @@ Dream.static "www/static";
+        }
+        @@ Dream.not_found
+    ]}
+*)
+val respond :
+  ?status:[< status ] ->
+  ?code:int ->
+  ?headers:(string * string) list ->
+    string -> response Lwt.t
+(** Same as {!Dream.val-response}, but the new {!type-response} is wrapped in a
+    {!type-promise}. *)
   type csrf_result =
     [ `Ok
     | `Expired of float
@@ -174,13 +202,12 @@ module Make
     ; response : response option
     ; client : string option
     ; severity : log_level
-    ; debug : bool
     ; will_send_response : bool }
 
   type error_handler = error -> response option Lwt.t
 
   val error_template :
-    (string option -> response -> response Lwt.t) -> error_handler
+  (error -> string -> response -> response Lwt.t) -> error_handler
 
   val https :
        ?stop:Lwt_switch.t
