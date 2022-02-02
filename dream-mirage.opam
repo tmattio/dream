@@ -56,6 +56,7 @@ depends: [
   "mimic"
   "bigstringaf"
   "digestif" {>= "1.0.0"}
+  "mirage-stack"
   "lwt"
   "tls-mirage"
   "lwt_ppx" {>= "1.2.2"}
