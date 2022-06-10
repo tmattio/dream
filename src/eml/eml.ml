@@ -788,19 +788,10 @@ let process_file (input_file, location, syntax) =
   | `Reason -> (true, ".re")
   in
 
-  let output_file =
-    let rec remove_extensions filename =
-      match Filename.chop_extension filename with
-      | filename -> remove_extensions filename
-      | exception Invalid_argument _ -> filename
-    in
-    remove_extensions input_file ^ extension
-  in
-
   (* We don't bother closing these - the OCaml runtime and/or kernel will close
      it automatically on process exit, anyway. *)
   let input_channel = open_in input_file in
-  let output_channel = open_out output_file in
+  let output_channel = stdout in
 
   let input_stream = Location.stream (fun () ->
     try Some (input_char input_channel)
