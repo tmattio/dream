@@ -15,18 +15,24 @@
   ptime
   unstrctrd
   uri
-  yojson
- )
- (preprocess (pps lwt_ppx))
- (instrumentation (backend bisect_ppx)))
+  yojson)
+ (preprocess
+  (pps lwt_ppx))
+ (instrumentation
+  (backend bisect_ppx)))
 
 (rule
  (targets error_template.ml)
  (deps error_template.eml.ml)
  (action
-  (run %{bin:dream_eml} %{deps} --workspace %{workspace_root})))
+  (with-stdout-to
+   error_template.ml
+   (run %{bin:dream_eml} %{deps} --workspace %{workspace_root}))))
 
 (rule
  (targets tag.ml)
  (deps tag.eml.ml)
- (action (run dream_eml %{deps} --workspace %{workspace_root})))
+ (action
+  (with-stdout-to
+   tag.ml
+   (run dream_eml %{deps} --workspace %{workspace_root}))))
